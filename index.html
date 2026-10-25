@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Subscription Manager | Personal Subscription Intelligence Platform</title>
+  
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-icon">
+        <i class="fas fa-brain"></i>
+      </div>
+      <div>
+        <div class="brand-title">SmartSub</div>
+        <span class="brand-badge">Intelligence</span>
+      </div>
+    </div>
+
+    <ul class="nav-links">
+      <li class="nav-section-title">Overview</li>
+      <li class="nav-item active" data-tab="dashboard">
+        <a href="#dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+      </li>
+
+      <li class="nav-section-title">Intelligence</li>
+      <li class="nav-item" data-tab="spending">
+        <a href="#spending"><i class="fas fa-wallet"></i> <span>Spending Analytics</span></a>
+      </li>
+      <li class="nav-item" data-tab="usage">
+        <a href="#usage"><i class="fas fa-tachometer-alt"></i> <span>Cost-per-Use &amp; Health</span></a>
+      </li>
+      <li class="nav-item" data-tab="overlaps">
+        <a href="#overlaps"><i class="fas fa-clone"></i> <span>Overlap Detection</span></a>
+      </li>
+      <li class="nav-item" data-tab="ai-advisor">
+        <a href="#ai-advisor"><i class="fas fa-robot"></i> <span>AI Subscription Advisor</span></a>
+      </li>
+
+      <li class="nav-section-title">Planning</li>
+      <li class="nav-item" data-tab="calendar">
+        <a href="#calendar"><i class="fas fa-calendar-alt"></i> <span>Renewal Calendar</span></a>
+      </li>
+      <li class="nav-item" data-tab="forecast">
+        <a href="#forecast"><i class="fas fa-chart-line"></i> <span>Forecast &amp; Risks</span></a>
+      </li>
+      <li class="nav-item" data-tab="simulator">
+        <a href="#simulator"><i class="fas fa-sliders-h"></i> <span>What-If Simulator</span></a>
+      </li>
+
+      <li class="nav-section-title">Management</li>
+      <li class="nav-item" data-tab="subscriptions">
+        <a href="#subscriptions"><i class="fas fa-credit-card"></i> <span>All Subscriptions</span></a>
+      </li>
+      <li class="nav-item" data-tab="budget-goals">
+        <a href="#budget-goals"><i class="fas fa-bullseye"></i> <span>Budget &amp; Goals</span></a>
+      </li>
+      <li class="nav-item" data-tab="shared">
+        <a href="#shared"><i class="fas fa-users"></i> <span>Shared Plans</span></a>
+      </li>
+      <li class="nav-item" data-tab="import-timeline">
+        <a href="#import-timeline"><i class="fas fa-file-import"></i> <span>Import &amp; Timeline</span></a>
+      </li>
+    </ul>
+
+    <div class="user-panel">
+      <div class="user-info" onclick="openModal('profileModal')">
+        <div class="user-avatar" id="user-avatar-initials">AJ</div>
+        <div class="user-meta">
+          <span class="user-name" id="user-display-name">Alex Johnson</span>
+          <span class="user-budget" id="user-display-budget">Budget: ₹3,000/mo</span>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="handleSignOut();" title="Sign Out">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="page-title-box">
+        <h1 id="page-heading">Subscription Intelligence Overview</h1>
+        <p id="page-subheading">Analyze recurring commitments, usage efficiency, and savings opportunities</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="openSimulatorWithId(null)">
+          <i class="fas fa-calculator"></i> Simulate Savings
+        </button>
+        <button class="btn btn-primary" onclick="openAddSubModal()">
+          <i class="fas fa-plus"></i> Add Subscription
+        </button>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <!-- High Risk Alert Banner -->
+      <div id="dashboard-risk-alert" class="alert-banner alert-danger" style="display:none;"></div>
+
+      <!-- TAB 1: EXECUTIVE DASHBOARD -->
+      <div id="tab-dashboard" class="tab-pane">
+        <!-- KPI Metrics Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-cyan">
+            <div class="kpi-header">
+              <span class="kpi-title">Active Subscriptions</span>
+              <div class="kpi-icon"><i class="fas fa-cubes"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-active-count">0</div>
+            <div class="kpi-subtitle">Managed active plans</div>
+          </div>
+
+          <div class="kpi-card kpi-rose">
+            <div class="kpi-header">
+              <span class="kpi-title">Monthly Cost</span>
+              <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-monthly-cost">₹0</div>
+            <div class="kpi-subtitle">Total recurring / month</div>
+          </div>
+
+          <div class="kpi-card kpi-emerald">
+            <div class="kpi-header">
+              <span class="kpi-title">Yearly Cost</span>
+              <div class="kpi-icon"><i class="fas fa-chart-pie"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-yearly-cost">₹0</div>
+            <div class="kpi-subtitle">Projected 12-month commitment</div>
+          </div>
+
+          <div class="kpi-card kpi-amber">
+            <div class="kpi-header">
+              <span class="kpi-title">Renewing Soon</span>
+              <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-renewing-soon">0</div>
+            <div class="kpi-subtitle">Within next 7 days</div>
+          </div>
+
+          <div class="kpi-card kpi-rose">
+            <div class="kpi-header">
+              <span class="kpi-title">Low Usage</span>
+              <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-low-usage">0</div>
+            <div class="kpi-subtitle">&le; 5 days used / month</div>
+          </div>
+
+          <div class="kpi-card kpi-amber">
+            <div class="kpi-header">
+              <span class="kpi-title">Overlaps</span>
+              <div class="kpi-icon"><i class="fas fa-clone"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-overlaps">0</div>
+            <div class="kpi-subtitle">Redundant category services</div>
+          </div>
+
+          <div class="kpi-card kpi-emerald">
+            <div class="kpi-header">
+              <span class="kpi-title">Potential Savings</span>
+              <div class="kpi-icon"><i class="fas fa-piggy-bank"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-savings">₹0</div>
+            <div class="kpi-subtitle">From optimization &amp; cuts</div>
+          </div>
+
+          <div class="kpi-card kpi-cyan">
+            <div class="kpi-header">
+              <span class="kpi-title">Budget Status</span>
+              <div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div>
+            </div>
+            <div class="kpi-value" id="kpi-budget-status">₹0</div>
+            <div class="progress-bar-container">
+              <div id="dashboard-budget-bar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Charts & Lists -->
+        <div class="charts-grid" style="margin-top: 24px;">
+          <!-- Category Spending Breakdown -->
+          <div class="chart-card">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title"><i class="fas fa-chart-pie" style="color:#6366f1;"></i> Category Spending Breakdown</h3>
+                <div class="section-desc">Distribution of recurring expenses</div>
+              </div>
+            </div>
+            <div style="position:relative; height:240px;">
+              <canvas id="dashboardCategoryChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Highest Cost Subscriptions -->
+          <div class="chart-card">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title"><i class="fas fa-fire" style="color:#f43f5e;"></i> Top Monthly Subscriptions</h3>
+                <div class="section-desc">Highest expense recurring plans</div>
+              </div>
+            </div>
+            <div id="dashboard-highest-cost-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+          </div>
+        </div>
+
+        <!-- Low Usage Subscriptions Alert Box -->
+        <div class="dashboard-section" style="margin-top: 24px;">
+          <div class="section-header">
+            <div>
+              <h3 class="section-title"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> Low-Usage Subscriptions (Needs Review)</h3>
+              <div class="section-desc">Subscriptions where cost exceeds recorded usage value</div>
+            </div>
+          </div>
+          <div id="dashboard-low-usage-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SUBSCRIPTIONS PORTFOLIO -->
+      <div id="tab-subscriptions" class="tab-pane" style="display:none;">
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div>
+              <h3 class="section-title"><i class="fas fa-list"></i> All Subscriptions</h3>
+              <div class="section-desc">Manage, edit, track renewal countdowns, and log price changes</div>
+            </div>
+            <button class="btn btn-primary" onclick="openAddSubModal()"><i class="fas fa-plus"></i> Add Subscription</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Service &amp; Plan</th>
+                  <th>Category</th>
+                  <th>Cost &amp; Cycle</th>
+                  <th>Renewal Date</th>
+                  <th>Usage &amp; Cost/Use</th>
+                  <th>Health Score</th>
+                  <th>Risk Level</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subscriptions-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SPENDING ANALYTICS -->
+      <div id="tab-spending" class="tab-pane" style="display:none;">
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-emerald">
+            <div class="kpi-header"><span class="kpi-title">Monthly Run Rate</span></div>
+            <div class="kpi-value" id="spending-monthly-total">₹0</div>
+          </div>
+          <div class="kpi-card kpi-cyan">
+            <div class="kpi-header"><span class="kpi-title">Yearly Projected</span></div>
+            <div class="kpi-value" id="spending-yearly-total">₹0</div>
+          </div>
+        </div>
+
+        <div class="dashboard-section" style="margin-top:24px;">
+          <h3 class="section-title"><i class="fas fa-layer-group"></i> Category Spending Breakdown</h3>
+          <div id="spending-category-breakdown-list" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: USAGE & COST-PER-USE -->
+      <div id="tab-usage" class="tab-pane" style="display:none;">
+        <!-- Health Scores Grid -->
+        <h3 class="section-title" style="margin-bottom:16px;"><i class="fas fa-heartbeat" style="color:#6366f1;"></i> Subscription Health Scores</h3>
+        <div class="kpi-grid" id="health-scores-grid"></div>
+
+        <!-- Cost Per Use Table -->
+        <div class="dashboard-section" style="margin-top:24px;">
+          <h3 class="section-title"><i class="fas fa-calculator" style="color:#06b6d4;"></i> Cost-per-Use Analysis</h3>
+          <p class="section-desc">Reveals true value per active usage day (Cost ÷ Days Used)</p>
+          <div class="table-responsive" style="margin-top:16px;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th>Monthly Cost</th>
+                  <th>Usage Frequency</th>
+                  <th>Cost Per Day</th>
+                  <th>Efficiency Tier</th>
+                  <th>Intelligence Feedback</th>
+                </tr>
+              </thead>
+              <tbody id="cost-per-use-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: OVERLAPS -->
+      <div id="tab-overlaps" class="tab-pane" style="display:none;">
+        <div id="overlaps-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+
+      <!-- TAB: AI SUBSCRIPTION ADVISOR -->
+      <div id="tab-ai-advisor" class="tab-pane" style="display:none;">
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size:1.3rem; font-weight:700;"><i class="fas fa-robot" style="color:#6366f1;"></i> AI Subscription Advisor</h2>
+              <p class="section-desc">Ask questions about your subscriptions, spending efficiency, renewals, and savings strategies.</p>
+            </div>
+            <span class="badge badge-info" id="ai-status-badge"><i class="fas fa-sparkles"></i> AI Powered</span>
+          </div>
+
+          <!-- Setup Notice if not configured -->
+          <div id="ai-setup-notice" class="alert-banner alert-warning" style="display:none; margin:16px 0;"></div>
+
+          <!-- Quick Question Prompts -->
+          <div style="margin-top:16px;">
+            <div style="font-size:0.85rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Suggested Questions:</div>
+            <div class="ai-prompt-chips">
+              <button type="button" class="prompt-chip" onclick="askAiQuick('How can I save ₹500 per month?')"><i class="fas fa-magic"></i> How can I save ₹500 per month?</button>
+              <button type="button" class="prompt-chip" onclick="askAiQuick('Which subscriptions should I review?')"><i class="fas fa-search"></i> Which subscriptions should I review?</button>
+              <button type="button" class="prompt-chip" onclick="askAiQuick('What renewals are coming up?')"><i class="fas fa-clock"></i> What renewals are coming up?</button>
+              <button type="button" class="prompt-chip" onclick="askAiQuick('Which subscriptions have the lowest recorded usage?')"><i class="fas fa-exclamation-circle"></i> Lowest recorded usage?</button>
+              <button type="button" class="prompt-chip" onclick="askAiQuick('How would my monthly cost change if I cancelled low-usage subscriptions?')"><i class="fas fa-calculator"></i> Impact of cancelling low-usage plans?</button>
+            </div>
+          </div>
+
+          <!-- AI Ask Input Form -->
+          <form id="aiAdvisorForm" onsubmit="handleAiAdvisorSubmit(event)" style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="ai-query-input" class="form-control" placeholder="Ask anything about your subscriptions, budget, or savings..." required>
+            <button type="submit" id="ai-submit-btn" class="btn btn-primary" style="white-space:nowrap;">
+              <i class="fas fa-paper-plane"></i> Ask Advisor
+            </button>
+          </form>
+
+          <!-- AI Response Area -->
+          <div id="ai-advisor-results" class="ai-response-card" style="display:none;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-brain" style="color:var(--accent-primary); font-size:1.2rem;"></i>
+                <strong style="color:#f8fafc; font-size:1.05rem;">Advisor Recommendation</strong>
+              </div>
+              <div id="ai-savings-badge" class="badge badge-success" style="display:none; font-size:0.85rem; padding:6px 12px;"></div>
+            </div>
+            <div id="ai-advisor-answer-text" style="line-height:1.7; font-size:0.92rem; color:#e2e8f0;"></div>
+            <div id="ai-action-items-container" style="margin-top:16px;"></div>
+            <div style="margin-top:18px; font-size:0.75rem; color:#94a3b8; border-top:1px solid rgba(148,163,184,0.1); padding-top:10px;" id="ai-disclaimer-text">
+              <i class="fas fa-info-circle"></i> SmartSub AI provides suggestions, not guaranteed financial results. Subscriptions are not automatically cancelled.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: RENEWAL CALENDAR -->
+      <div id="tab-calendar" class="tab-pane" style="display:none;">
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size:1.3rem; font-weight:700;"><i class="fas fa-calendar-alt" style="color:#06b6d4;"></i> Renewal Calendar</h2>
+              <p class="section-desc">Track and anticipate subscription renewal charges to avoid surprise bank account debits.</p>
+            </div>
+            <div class="calendar-filter-bar" style="margin-bottom:0;">
+              <button class="filter-btn active" data-filter="7days" onclick="setCalendarFilter('7days', this)"><i class="fas fa-fire"></i> Next 7 Days</button>
+              <button class="filter-btn" data-filter="30days" onclick="setCalendarFilter('30days', this)"><i class="fas fa-calendar"></i> Next 30 Days</button>
+              <button class="filter-btn" data-filter="all" onclick="setCalendarFilter('all', this)"><i class="fas fa-list"></i> All Upcoming</button>
+            </div>
+          </div>
+
+          <div id="calendar-grid-container" class="calendar-grid" style="margin-top:20px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 6: FORECAST & RISKS -->
+      <div id="tab-forecast" class="tab-pane" style="display:none;">
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-rose">
+            <div class="kpi-header"><span class="kpi-title">Next 30 Days</span></div>
+            <div class="kpi-value" id="forecast-30d">₹0</div>
+          </div>
+          <div class="kpi-card kpi-amber">
+            <div class="kpi-header"><span class="kpi-title">Next 3 Months</span></div>
+            <div class="kpi-value" id="forecast-3m">₹0</div>
+          </div>
+          <div class="kpi-card kpi-cyan">
+            <div class="kpi-header"><span class="kpi-title">Next 6 Months</span></div>
+            <div class="kpi-value" id="forecast-6m">₹0</div>
+          </div>
+          <div class="kpi-card kpi-emerald">
+            <div class="kpi-header"><span class="kpi-title">Next 12 Months</span></div>
+            <div class="kpi-value" id="forecast-12m">₹0</div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-top:24px; min-height:320px;">
+          <h3 class="section-title"><i class="fas fa-chart-line"></i> 12-Month Projected Commitment Trend</h3>
+          <div style="position:relative; height:260px; margin-top:12px;">
+            <canvas id="forecastLineChart"></canvas>
+          </div>
+        </div>
+
+        <div class="dashboard-section" style="margin-top:24px;">
+          <h3 class="section-title"><i class="fas fa-shield-alt" style="color:#f43f5e;"></i> Renewal Risk Priority Queue</h3>
+          <div class="table-responsive" style="margin-top:14px;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Renewal Date</th>
+                  <th>Usage</th>
+                  <th>Risk Level</th>
+                  <th>Action Required</th>
+                </tr>
+              </thead>
+              <tbody id="renewal-risks-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: WHAT-IF SIMULATOR -->
+      <div id="tab-simulator" class="tab-pane" style="display:none;">
+        <div class="simulator-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size:1.3rem; font-weight:700;"><i class="fas fa-sliders-h" style="color:#6366f1;"></i> What-If Savings Simulator</h2>
+              <p class="section-desc">Select subscriptions you are considering cancelling or pausing to dynamically project savings.</p>
+            </div>
+            <button class="btn btn-secondary" onclick="resetSimulator()">
+              <i class="fas fa-undo"></i> Reset Simulation
+            </button>
+          </div>
+
+          <div class="kpi-grid" style="margin-top:16px;">
+            <div class="kpi-card kpi-rose">
+              <div class="kpi-header"><span class="kpi-title">Subscriptions To Cut</span></div>
+              <div class="kpi-value" id="sim-cancelled-count">0</div>
+            </div>
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header"><span class="kpi-title">Monthly Savings</span></div>
+              <div class="kpi-value" id="sim-monthly-savings">₹0</div>
+            </div>
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header"><span class="kpi-title">Annual Savings</span></div>
+              <div class="kpi-value" id="sim-yearly-savings">₹0</div>
+            </div>
+            <div class="kpi-card kpi-cyan">
+              <div class="kpi-header"><span class="kpi-title">New Monthly Spend</span></div>
+              <div class="kpi-value" id="sim-new-monthly-commitment">₹0</div>
+            </div>
+            <div class="kpi-card kpi-cyan">
+              <div class="kpi-header"><span class="kpi-title">New Budget Remaining</span></div>
+              <div class="kpi-value" id="sim-new-budget-remaining">₹0</div>
+              <div class="kpi-subtitle" id="sim-pct-saved">0% saved</div>
+            </div>
+          </div>
+
+          <h4 style="margin:24px 0 8px; font-size:0.95rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.05em;">Select Plans To Simulate Cancellation:</h4>
+          <div class="simulator-items" id="simulator-items-container"></div>
+        </div>
+      </div>
+
+      <!-- TAB 8: BUDGET & GOALS -->
+      <div id="tab-budget-goals" class="tab-pane" style="display:none;">
+        <div class="charts-grid">
+          <!-- Budget Settings & Monitor -->
+          <div class="dashboard-section">
+            <h3 class="section-title"><i class="fas fa-wallet" style="color:#10b981;"></i> Monthly Budget Management</h3>
+            <div style="display:flex; gap:12px; margin:16px 0;">
+              <input type="number" id="budget-input-val" class="form-control" placeholder="3000">
+              <button class="btn btn-primary" onclick="saveBudgetChange()">Save Budget</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:20px; font-size:0.9rem;">
+              <span>Budget Limit: <strong id="budget-view-limit">₹3,000</strong></span>
+              <span>Committed: <strong id="budget-view-committed">₹0</strong></span>
+              <span>Remaining: <strong id="budget-view-remaining" style="color:#10b981;">₹0</strong></span>
+            </div>
+            <div class="progress-bar-container" style="height:10px; margin-top:10px;">
+              <div id="budget-detail-bar" class="progress-bar-fill" style="width:0%;"></div>
+            </div>
+            <div style="text-align:right; font-size:0.75rem; color:#94a3b8; margin-top:4px;" id="budget-view-pct">0% used</div>
+          </div>
+
+          <!-- Subscription Goal Tracking -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title"><i class="fas fa-bullseye" style="color:#8b5cf6;"></i> Subscription Goals</h3>
+                <div class="section-desc">Connect subscriptions to tangible career or learning milestones</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openAddGoalModal()"><i class="fas fa-plus"></i> Link Goal</button>
+            </div>
+            <div id="goals-container-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 9: SHARED SUBSCRIPTIONS -->
+      <div id="tab-shared" class="tab-pane" style="display:none;">
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div>
+              <h3 class="section-title"><i class="fas fa-users" style="color:#06b6d4;"></i> Shared &amp; Family Subscription Management</h3>
+              <div class="section-desc">Calculate split shares and track member payment collections</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <select id="shared-sub-select" class="form-control" style="width:auto;"></select>
+              <button class="btn btn-primary" onclick="openAddMemberModal()"><i class="fas fa-user-plus"></i> Add Member</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid" style="margin:20px 0;">
+            <div class="kpi-card kpi-cyan">
+              <div class="kpi-header"><span class="kpi-title">Subscription</span></div>
+              <div class="kpi-value" id="shared-sub-title" style="font-size:1.2rem;">-</div>
+            </div>
+            <div class="kpi-card kpi-rose">
+              <div class="kpi-header"><span class="kpi-title">Total Plan Cost</span></div>
+              <div class="kpi-value" id="shared-total-cost">₹0</div>
+            </div>
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header"><span class="kpi-title">Equal Split Share</span></div>
+              <div class="kpi-value" id="shared-split-calc" style="font-size:1.15rem;">₹0</div>
+            </div>
+          </div>
+
+          <h4 style="margin-bottom:12px; font-size:1rem;">Members &amp; Payment Status:</h4>
+          <div id="shared-members-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB 10: IMPORT & TIMELINE -->
+      <div id="tab-import-timeline" class="tab-pane" style="display:none;">
+        <div class="charts-grid">
+          <!-- Receipt / Invoice Scanner Box -->
+          <div class="dashboard-section">
+            <h3 class="section-title"><i class="fas fa-receipt" style="color:#06b6d4;"></i> Invoice &amp; Receipt AI Scanner</h3>
+            <p class="section-desc">Upload a subscription receipt or invoice (PNG, JPG, PDF) to automatically extract service name, cost, interval, and renewal date.</p>
+            
+            <div style="border:2px dashed rgba(6, 182, 212, 0.4); border-radius:12px; padding:28px; text-align:center; margin:16px 0; background:rgba(6, 182, 212, 0.04);">
+              <i class="fas fa-file-invoice-dollar" style="font-size:2.5rem; color:#06b6d4; margin-bottom:12px;"></i>
+              <p style="font-size:0.9rem; color:#cbd5e1; margin-bottom:12px;">Upload receipt/invoice image or PDF</p>
+              <input type="file" id="receiptFileInput" accept="image/*,.pdf,.txt" style="display:none;" onchange="handleReceiptUpload(this)">
+              <button class="btn btn-secondary" onclick="document.getElementById('receiptFileInput').click()">
+                <i class="fas fa-file-upload"></i> Browse Invoice / Receipt
+              </button>
+            </div>
+
+            <div id="receipt-scan-results"></div>
+          </div>
+
+          <!-- CSV Import Box -->
+          <div class="dashboard-section">
+            <h3 class="section-title"><i class="fas fa-file-csv" style="color:#10b981;"></i> Statement / CSV Import</h3>
+            <p class="section-desc">Upload bank transaction statements to auto-detect recurring subscription candidates.</p>
+            
+            <div style="border:2px dashed var(--border-color); border-radius:12px; padding:28px; text-align:center; margin:16px 0;">
+              <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem; color:#6366f1; margin-bottom:12px;"></i>
+              <p style="font-size:0.9rem; color:#cbd5e1; margin-bottom:12px;">Upload a CSV with Date, Description, Amount</p>
+              <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleCsvUpload(this)">
+              <button class="btn btn-secondary" onclick="document.getElementById('csvFileInput').click()">
+                <i class="fas fa-folder-open"></i> Browse CSV File
+              </button>
+            </div>
+
+            <div id="csv-import-results"></div>
+          </div>
+
+          <!-- Subscription Event Timeline -->
+          <div class="dashboard-section">
+            <h3 class="section-title"><i class="fas fa-history" style="color:#a855f7;"></i> Subscription Lifecycle Timeline</h3>
+            <p class="section-desc">Chronological record of price changes, renewals, and actions</p>
+            <div class="timeline-container" id="timeline-events-container" style="margin-top:20px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- 1. Subscription Modal (Add / Edit) -->
+<div id="subscriptionModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title" id="subscription-modal-title">Add Subscription</h3>
+      <button class="modal-close-btn" onclick="closeModal('subscriptionModal')">&times;</button>
+    </div>
+    <form id="subscriptionForm">
+      <input type="hidden" id="sub-id">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service Name *</label>
+            <input type="text" id="sub-service-name" class="form-control" required placeholder="Netflix, Spotify...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plan Name</label>
+            <input type="text" id="sub-plan-name" class="form-control" placeholder="Premium 4K, Pro...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Cost (₹) *</label>
+            <input type="number" step="0.01" id="sub-cost" class="form-control" required placeholder="649">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Billing Cycle *</label>
+            <select id="sub-billing-cycle" class="form-control" required>
+              <option value="MONTHLY">Monthly</option>
+              <option value="YEARLY">Yearly</option>
+              <option value="QUARTERLY">Quarterly</option>
+              <option value="WEEKLY">Weekly</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Renewal Date *</label>
+            <input type="date" id="sub-renewal-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="sub-category" class="form-control" required>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Cloud Storage">Cloud Storage</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Education">Education</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Gaming">Gaming</option>
+              <option value="News">News</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Usage Frequency (Days / Month)</label>
+            <input type="number" min="0" max="31" id="sub-usage-days" class="form-control" placeholder="8">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Satisfaction Rating (1-5)</label>
+            <select id="sub-value-rating" class="form-control">
+              <option value="5">★★★★★ Excellent (5)</option>
+              <option value="4">★★★★☆ Good (4)</option>
+              <option value="3" selected>★★★☆☆ Moderate (3)</option>
+              <option value="2">★★☆☆☆ Low (2)</option>
+              <option value="1">★☆☆☆☆ Poor (1)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Personal Reason / Note</label>
+          <input type="text" id="sub-personal-reason" class="form-control" placeholder="Movies and series with family">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('subscriptionModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Subscription</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 2. Price Change Modal -->
+<div id="priceChangeModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Log Price Change</h3>
+      <button class="modal-close-btn" onclick="closeModal('priceChangeModal')">&times;</button>
+    </div>
+    <form id="priceChangeForm">
+      <input type="hidden" id="price-sub-id">
+      <div class="modal-body">
+        <div style="font-size:0.9rem; color:#94a3b8; margin-bottom:12px;">
+          Current Price: <strong id="price-current-display" style="color:#f8fafc;"></strong>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Price (₹) *</label>
+          <input type="number" step="0.01" id="price-new-val" class="form-control" required placeholder="649">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reason for Price Change</label>
+          <input type="text" id="price-reason-val" class="form-control" placeholder="e.g. Plan revised / Annual inflation adjustment">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('priceChangeModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Record Price Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 3. Goal Linking Modal -->
+<div id="goalModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Link Goal to Subscription</h3>
+      <button class="modal-close-btn" onclick="closeModal('goalModal')">&times;</button>
+    </div>
+    <form id="goalForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Linked Subscription *</label>
+          <select id="goal-sub-id" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Goal Title *</label>
+          <input type="text" id="goal-title-val" class="form-control" required placeholder="e.g. Complete Java Certification">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="goal-desc-val" class="form-control" rows="2" placeholder="Target 10 modules and capstone project"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Initial Progress (%)</label>
+            <input type="number" min="0" max="100" id="goal-prog-val" class="form-control" value="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Date</label>
+            <input type="date" id="goal-target-date" class="form-control">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('goalModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Goal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 4. Shared Member Modal -->
+<div id="sharedMemberModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Add Shared Member</h3>
+      <button class="modal-close-btn" onclick="closeModal('sharedMemberModal')">&times;</button>
+    </div>
+    <form id="sharedMemberForm">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Member Name *</label>
+            <input type="text" id="member-name-val" class="form-control" required placeholder="Rahul Sharma">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="member-email-val" class="form-control" placeholder="rahul@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Share Amount (₹) *</label>
+            <input type="number" step="0.01" id="member-amount-val" class="form-control" required placeholder="162.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <input type="text" id="member-notes-val" class="form-control" placeholder="UPI / GPay">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('sharedMemberModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Member</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 5. Receipt Review Modal -->
+<div id="receiptReviewModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-check-circle" style="color:#10b981;"></i> Review Extracted Subscription</h3>
+      <button class="modal-close-btn" onclick="closeModal('receiptReviewModal')">&times;</button>
+    </div>
+    <form id="receiptReviewForm">
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:14px;">
+          SmartSub AI extracted the following details from your invoice. Please review and confirm before saving.
+        </p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service Name *</label>
+            <input type="text" id="receipt-service-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plan Name</label>
+            <input type="text" id="receipt-plan-name" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Cost (₹) *</label>
+            <input type="number" step="0.01" id="receipt-cost" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Billing Cycle *</label>
+            <select id="receipt-billing-cycle" class="form-control" required>
+              <option value="MONTHLY">Monthly</option>
+              <option value="YEARLY">Yearly</option>
+              <option value="QUARTERLY">Quarterly</option>
+              <option value="WEEKLY">Weekly</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Renewal Date *</label>
+            <input type="date" id="receipt-renewal-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="receipt-category" class="form-control" required>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Cloud Storage">Cloud Storage</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Education">Education</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Gaming">Gaming</option>
+              <option value="News">News</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="receipt-confidence-note" style="font-size:0.8rem; color:#cbd5e1; background:rgba(15,23,42,0.6); padding:10px; border-radius:6px; border:1px solid var(--border-color); margin-top:8px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('receiptReviewModal')">Discard</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Save to Subscriptions</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 6. Health Explanation Modal -->
+<div id="healthInfoModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-heartbeat" style="color:#6366f1;"></i> Health Score Calculation Formula</h3>
+      <button class="modal-close-btn" onclick="closeModal('healthInfoModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="font-size:0.9rem; line-height:1.7;">
+      <p style="color:#cbd5e1; margin-bottom:16px;">
+        SmartSub evaluates every subscription on a deterministic <strong>0–100 scale</strong> to ensure objective financial transparency:
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+        <div style="background:rgba(99,102,241,0.1); border-left:4px solid #6366f1; padding:12px; border-radius:4px;">
+          <strong style="color:#c7d2fe;">1. Usage Frequency (40% Weight)</strong>
+          <p style="color:#94a3b8; font-size:0.82rem; margin:2px 0 0;"><code>(Days Used per Month ÷ 30) × 100</code>. Directly rewards active daily utility.</p>
+        </div>
+
+        <div style="background:rgba(16,185,129,0.1); border-left:4px solid #10b981; padding:12px; border-radius:4px;">
+          <strong style="color:#a7f3d0;">2. Value &amp; Satisfaction Rating (30% Weight)</strong>
+          <p style="color:#94a3b8; font-size:0.82rem; margin:2px 0 0;"><code>Rating (1–5 Stars) × 20</code>. Captures subjective personal necessity and enjoyment.</p>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.1); border-left:4px solid #f59e0b; padding:12px; border-radius:4px;">
+          <strong style="color:#fde68a;">3. Cost Impact &amp; Budget Efficiency (30% Weight)</strong>
+          <p style="color:#94a3b8; font-size:0.82rem; margin:2px 0 0;">Evaluates cost burden: &le;₹300/mo (95pts), &le;₹800/mo (75pts), &le;₹1,500/mo (55pts), &gt;₹1,500/mo (35pts).</p>
+        </div>
+      </div>
+
+      <h4 style="font-size:0.95rem; margin-bottom:8px;">Score Ranges:</h4>
+      <ul style="color:#cbd5e1; padding-left:20px; font-size:0.85rem;">
+        <li><strong style="color:#10b981;">75 – 100 (Excellent)</strong>: Optimal usage and superior return on investment.</li>
+        <li><strong style="color:#3b82f6;">55 – 74 (Good)</strong>: Well-balanced utility and reasonable cost.</li>
+        <li><strong style="color:#f59e0b;">35 – 54 (Needs Review)</strong>: High cost relative to recorded active days.</li>
+        <li><strong style="color:#ef4444;">0 – 34 (High Attention)</strong>: Seldom used with significant monthly drag.</li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" onclick="closeModal('healthInfoModal')">Understood</button>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Firebase Authentication Modal -->
+<div id="loginModal" class="modal-overlay">
+  <div class="modal-card" style="max-width:440px;">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-brain" style="color:var(--accent-primary);"></i>
+        <h3 class="modal-title">SmartSub Account</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('loginModal')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error / Validation Banner -->
+      <div id="auth-error-banner" class="auth-error-banner" style="display:none;"></div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-signup" onclick="switchAuthTab('signup')">Register</button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-forgot" onclick="switchAuthTab('forgot')">Reset</button>
+      </div>
+
+      <!-- 1. Sign In Form -->
+      <form id="authSignInForm" onsubmit="handleAuthSignIn(event)">
+        <div class="form-group">
+          <label class="form-label">Email or Username</label>
+          <input type="text" id="signin-email" class="form-control" required placeholder="alex@smartsub.io or demo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="signin-password" class="form-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" id="btn-signin-submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
+          <span id="signin-btn-text">Sign In</span>
+          <span id="signin-btn-spinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Authenticating...</span>
+        </button>
+      </form>
+
+      <!-- 2. Register Form -->
+      <form id="authSignUpForm" onsubmit="handleAuthSignUp(event)" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="signup-name" class="form-control" required placeholder="Priya Sharma">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" id="signup-email" class="form-control" required placeholder="priya@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password (min 6 characters) *</label>
+          <input type="password" id="signup-password" minlength="6" class="form-control" required placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monthly Subscription Budget (₹)</label>
+          <input type="number" id="signup-budget" class="form-control" value="3000">
+        </div>
+        <button type="submit" id="btn-signup-submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
+          <span id="signup-btn-text">Create Free Account</span>
+          <span id="signup-btn-spinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Creating account...</span>
+        </button>
+      </form>
+
+      <!-- 3. Forgot Password Form -->
+      <form id="authForgotForm" onsubmit="handleAuthForgot(event)" style="display:none;">
+        <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:14px;">
+          Enter your registered email address and Firebase will send a secure password reset link.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" id="forgot-email" class="form-control" required placeholder="alex@smartsub.io">
+        </div>
+        <button type="submit" id="btn-forgot-submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
+          <span id="forgot-btn-text">Send Reset Email</span>
+          <span id="forgot-btn-spinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Sending...</span>
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>OR</span></div>
+
+      <!-- Google Sign In Button -->
+      <button type="button" class="btn-google" onclick="handleGoogleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.548 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <!-- Instant Demo Account Access Button -->
+      <button type="button" class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:0.85rem;" onclick="handleDemoQuickLogin()">
+        <i class="fas fa-user-shield" style="color:#f59e0b;"></i> Sign in as Demo User (Alex Johnson)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script>
+  if (typeof window !== 'undefined' && !window.__FIREBASE_CONFIG__) {
+    const metaApiKey = '%VITE_FIREBASE_API_KEY%';
+    if (metaApiKey && !metaApiKey.startsWith('%')) {
+      window.__FIREBASE_CONFIG__ = {
+        apiKey: metaApiKey,
+        authDomain: '%VITE_FIREBASE_AUTH_DOMAIN%',
+        projectId: '%VITE_FIREBASE_PROJECT_ID%',
+        storageBucket: '%VITE_FIREBASE_STORAGE_BUCKET%',
+        messagingSenderId: '%VITE_FIREBASE_MESSAGING_SENDER_ID%',
+        appId: '%VITE_FIREBASE_APP_ID%'
+      };
+    }
+  }
+</script>
+<script src="js/firebase.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
